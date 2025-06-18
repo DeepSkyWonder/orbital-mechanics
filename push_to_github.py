@@ -174,21 +174,17 @@ def push_changes():
             print(f"❌ Commit failed: {result.stderr}")
             return False
     
-<<<<<<< HEAD
     # Debug: Check current state before push
     print("🔍 Debug: Checking current state...")
     run_command("git log --oneline -3", "Recent commits")
     run_command("git status", "Git status")
     run_command("git remote -v", "Remote info")
     
-=======
->>>>>>> 1350938f504b6897d77b7d77d30c9a8732bffde5
     # Push to GitHub
     print("⬆️  Pushing to GitHub...")
     result = run_command("git push origin main", "Pushing to GitHub")
     
     if isinstance(result, subprocess.CalledProcessError):
-<<<<<<< HEAD
         print(f"🔍 Debug: Push failed. Error: {result.stderr}")
         
         if "non-fast-forward" in result.stderr:
@@ -223,10 +219,6 @@ def push_changes():
                 return False
     else:
         print("✅ Push succeeded on first try!")
-=======
-        print("❌ Push failed. Trying to set upstream...")
-        run_command("git push -u origin main", "Pushing with upstream")
->>>>>>> 1350938f504b6897d77b7d77d30c9a8732bffde5
     
     print("✅ Successfully pushed changes to GitHub!")
     print("🔗 Repository: https://github.com/DeepSkyWonder/orbital-mechanics")
