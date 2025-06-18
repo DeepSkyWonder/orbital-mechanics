@@ -179,8 +179,19 @@ def push_changes():
     result = run_command("git push origin main", "Pushing to GitHub")
     
     if isinstance(result, subprocess.CalledProcessError):
-        print("❌ Push failed. Trying to set upstream...")
-        run_command("git push -u origin main", "Pushing with upstream")
+        if "non-fast-forward" in result.stderr:
+            print("⚠️  Non-fast-forward error. Pulling and retrying...")
+            run_command("git pull origin main --allow-unrelated-histories", "Pulling latest changes")
+            result = run_command("git push origin main", "Retrying push")
+            if isinstance(result, subprocess.CalledProcessError):
+                print("❌ Push still failed after pull")
+                return False
+        else:
+            print("❌ Push failed. Trying to set upstream...")
+            result = run_command("git push -u origin main", "Pushing with upstream")
+            if isinstance(result, subprocess.CalledProcessError):
+                print("❌ Push failed completely")
+                return False
     
     print("✅ Successfully pushed changes to GitHub!")
     print("🔗 Repository: https://github.com/DeepSkyWonder/orbital-mechanics")
