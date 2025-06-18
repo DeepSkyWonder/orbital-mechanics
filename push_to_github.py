@@ -181,7 +181,11 @@ def push_changes():
     if isinstance(result, subprocess.CalledProcessError):
         if "non-fast-forward" in result.stderr:
             print("⚠️  Non-fast-forward error. Pulling and retrying...")
-            run_command("git pull origin main --allow-unrelated-histories", "Pulling latest changes")
+            pull_result = run_command("git pull origin main --allow-unrelated-histories", "Pulling latest changes")
+            if isinstance(pull_result, subprocess.CalledProcessError):
+                print("❌ Failed to pull remote changes")
+                return False
+            
             result = run_command("git push origin main", "Retrying push")
             if isinstance(result, subprocess.CalledProcessError):
                 print("❌ Push still failed after pull")
