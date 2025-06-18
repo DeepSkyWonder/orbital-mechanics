@@ -71,6 +71,18 @@ animate_orbits(orbits, names, duration_days=80*365, time_step_days=30)
 !git push -u origin main
 ```
 
+### Automated Push Script
+
+For ongoing updates, use the automated push script:
+
+```python
+# Run the automated push script
+from push_to_github import main
+main()
+```
+
+The script automatically handles git configuration, staging, commits, and pushing changes to GitHub.
+
 ## Restoration Script for New Sessions
 
 ```python
