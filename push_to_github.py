@@ -103,6 +103,10 @@ def push_changes():
         return True
     
     print("📦 Staging changes...")
+    
+    # Remove cached files from tracking if they exist
+    run_command("git rm -r --cached __pycache__/ 2>/dev/null || true", "Removing cached files", check=False)
+    
     run_command("git add .", "Staging all changes")
     
     # Pull latest changes first
