@@ -174,28 +174,51 @@ def push_changes():
             print(f"❌ Commit failed: {result.stderr}")
             return False
     
+    # Debug: Check current state before push
+    print("🔍 Debug: Checking current state...")
+    run_command("git log --oneline -3", "Recent commits")
+    run_command("git status", "Git status")
+    run_command("git remote -v", "Remote info")
+    
     # Push to GitHub
     print("⬆️  Pushing to GitHub...")
     result = run_command("git push origin main", "Pushing to GitHub")
     
     if isinstance(result, subprocess.CalledProcessError):
+        print(f"🔍 Debug: Push failed. Error: {result.stderr}")
+        
         if "non-fast-forward" in result.stderr:
             print("⚠️  Non-fast-forward error. Pulling and retrying...")
+            
+            # Debug: Check remote state
+            run_command("git fetch origin", "Fetching remote info")
+            run_command("git log --oneline origin/main -3", "Remote commits")
+            
             pull_result = run_command("git pull origin main --allow-unrelated-histories", "Pulling latest changes")
+            
             if isinstance(pull_result, subprocess.CalledProcessError):
-                print("❌ Failed to pull remote changes")
+                print(f"❌ Failed to pull remote changes: {pull_result.stderr}")
                 return False
             
+            # Debug: Check state after pull
+            run_command("git log --oneline -3", "Commits after pull")
+            
+            print("🔄 Retrying push after pull...")
             result = run_command("git push origin main", "Retrying push")
+            
             if isinstance(result, subprocess.CalledProcessError):
-                print("❌ Push still failed after pull")
+                print(f"❌ Push still failed after pull: {result.stderr}")
                 return False
+            else:
+                print("✅ Push succeeded after pull!")
         else:
-            print("❌ Push failed. Trying to set upstream...")
+            print("❌ Push failed for other reason. Trying to set upstream...")
             result = run_command("git push -u origin main", "Pushing with upstream")
             if isinstance(result, subprocess.CalledProcessError):
-                print("❌ Push failed completely")
+                print(f"❌ Push failed completely: {result.stderr}")
                 return False
+    else:
+        print("✅ Push succeeded on first try!")
     
     print("✅ Successfully pushed changes to GitHub!")
     print("🔗 Repository: https://github.com/DeepSkyWonder/orbital-mechanics")
